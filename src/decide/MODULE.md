@@ -27,6 +27,7 @@ Sorts the surviving rules *before* evaluation based on the site's `ruleEvalMode`
 ### 3. Datasource Fetcher (`engine/datasource-fetcher.ts`)
 - Collects all unique datasource IDs required by the surviving, sorted rules.
 - Fetches them in parallel using `Promise.allSettled`.
+- **Timeout Protection:** Each data source is capped at 250ms. Slow sources are ignored and logged.
 - Maps the visitor traits into the datasource parameters based on the site config's param templates.
 - Merges the asynchronous results into a flat context object using dot-notation keys (e.g., `{ 'segments.tier': 'premium' }`).
 
