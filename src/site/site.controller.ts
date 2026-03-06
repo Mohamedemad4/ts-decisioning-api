@@ -1,20 +1,24 @@
 import {
   Controller,
   Get,
+  Patch,
+  Body,
   Param,
   Headers,
   Res,
+  BadRequestException,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { SiteService } from './site.service';
 import { RulesService } from '../rules/rules.service';
+import { UpdateSiteDto } from './site.dto';
 
 @Controller()
 export class SiteController {
   constructor(
     private readonly siteService: SiteService,
     private readonly rulesService: RulesService,
-  ) {}
+  ) { }
 
   /** GET /sites — list all sites */
   @Get('sites')
@@ -26,6 +30,15 @@ export class SiteController {
   @Get('sites/:siteId')
   async getSite(@Param('siteId') siteId: string) {
     return this.siteService.getSite(siteId);
+  }
+
+  /** PATCH /sites/:siteId — update site */
+  @Patch('sites/:siteId')
+  async updateSite(
+    @Param('siteId') siteId: string,
+    @Body() dto: UpdateSiteDto,
+  ) {
+    return this.siteService.updateSite(siteId, dto);
   }
 
   /**

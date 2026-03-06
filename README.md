@@ -96,3 +96,19 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+## Logging & Tracing
+
+All modules use NestJS Logger for structured logging. Key events logged:
+- Rule evaluation decisions (DecideModule)
+- Config version bumps (RulesModule, SiteModule)
+- LLM copy generation attempts and claim validation (CopyAssistantModule)
+- Data source fetch results and failures
+
+## Safety & Compliance
+
+The API enforces consent boundaries and claim validation:
+- Consent filtering strips non-safe visitor data when `marketing=false`
+- Copy Assistant validates all LLM-generated claims against allowed list
+- Invalid claim usage triggers retry logic with fallback to safe defaults
+- All claim usage is logged for audit trails

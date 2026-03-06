@@ -1,14 +1,16 @@
-import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
+import { Injectable, NotFoundException, OnModuleInit, Inject, forwardRef, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { SiteDocument, SiteDoc } from './site.entity';
-import { StoredSite, CreateSite, SiteListItem, RuleEvalMode } from './site.schema';
+import { StoredSite, CreateSite, UpdateSite, SiteListItem, RuleEvalMode } from './site.schema';
+import { RulesService } from '../rules/rules.service';
 
 @Injectable()
 export class SiteService implements OnModuleInit {
   constructor(
-    @InjectModel(SiteDocument.name) private siteModel: Model<SiteDoc>
-  ) {}
+    @InjectModel(SiteDocument.name) private siteModel: Model<SiteDoc>,
+    @Inject(forwardRef(() => RulesService)) private readonly rulesService: RulesService,
+  ) { }
 
   async onModuleInit() {
     await this.seed();
@@ -107,6 +109,42 @@ export class SiteService implements OnModuleInit {
       configVersion: saved.configVersion,
       ruleEvalMode: saved.ruleEvalMode,
       dataSources: saved.dataSources,
+    } as StoredSite;
+  }
+
+  async updateSite(siteId: string, input: UpdateSite): Promise<StoredSite> {
+    const site = await this.siteModel.findOne({ siteId }).exec();
+    if (!site) {
+      throw new NotFoundException(`Site '${siteId}' not found`);
+    }
+
+
+    if (input.ruleEvalMode) {
+      site.ruleEvalMode = input.ruleEvalMode;
+      if (input.ruleEvalMode === 'PRIORITY') {
+        const rules = await this.rulesService.listRules(siteId);
+        const invalidRules = rules.filter(r => typeof r.priority !== 'number');
+        if (invalidRules.length > 0) {
+          throw new BadRequestException(
+            `Cannot set mode to PRIORITY. The following rules are missing a priority: ${invalidRules.map(r => r.id).join(', ')}`
+          );
+        }
+      }
+
+    }
+    if (input.dataSources) {
+      site.dataSources = input.dataSources;
+    }
+
+    const currentNum = parseInt(site.configVersion.replace('v', ''), 10) || 0;
+    site.configVersion = `v${currentNum + 1}`;
+
+    await site.save();
+    return {
+      siteId: site.siteId,
+      configVersion: site.configVersion,
+      ruleEvalMode: site.ruleEvalMode,
+      dataSources: site.dataSources,
     } as StoredSite;
   }
 }

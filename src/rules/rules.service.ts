@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException, OnModuleInit } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, OnModuleInit, Inject, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { RuleDocument, RuleDoc } from './rules.entity';
@@ -9,6 +9,7 @@ import { SiteService } from '../site/site.service';
 export class RulesService implements OnModuleInit {
   constructor(
     @InjectModel(RuleDocument.name) private ruleModel: Model<RuleDoc>,
+    @Inject(forwardRef(() => SiteService))
     private readonly siteService: SiteService,
   ) { }
 
@@ -31,7 +32,7 @@ export class RulesService implements OnModuleInit {
         description: 'German mobile users',
         conditions: { country: 'DE', deviceType: 'mobile' },
         variantId: 'german-mobile-hero',
-        headline: 'Willkommen – Mobil optimiert',
+        headline: 'Willkommen - Mobil optimiert',
       },
       {
         siteId: 'site-1',

@@ -7,6 +7,7 @@ import { ZodValidationPipe, ZodSerializerInterceptor } from 'nestjs-zod';
 import { SiteModule } from './site/site.module';
 import { RulesModule } from './rules/rules.module';
 import { DecideModule } from './decide/decide.module';
+import { CopyAssistantModule } from './copy-assistant/copy-assistant.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { DecideModule } from './decide/decide.module';
     SiteModule,
     RulesModule,
     DecideModule,
+    CopyAssistantModule,
   ],
   providers: [
     { provide: APP_PIPE, useClass: ZodValidationPipe },

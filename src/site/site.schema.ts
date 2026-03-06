@@ -46,6 +46,14 @@ export const CreateSiteSchema = z.discriminatedUnion('ruleEvalMode', [
 
 export type CreateSite = z.infer<typeof CreateSiteSchema>;
 
+/** Schema for updating a site */
+export const UpdateSiteSchema = z.object({
+  ruleEvalMode: z.enum(['PRIORITY', 'SPECIFICITY']).optional(),
+  dataSources: z.array(DataSourceDefinitionSchema).optional(),
+});
+
+export type UpdateSite = z.infer<typeof UpdateSiteSchema>;
+
 /** Stored site shape (adds configVersion, managed internally) */
 export const StoredSiteSchema = z.discriminatedUnion('ruleEvalMode', [
   z.object({

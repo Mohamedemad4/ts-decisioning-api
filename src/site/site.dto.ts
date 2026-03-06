@@ -15,6 +15,12 @@ const UnifiedStoredSiteSchema = UnifiedCreateSiteSchema.extend({
   configVersion: ConfigVersionSchema,
 });
 
-export class CreateSiteDto extends createZodDto(UnifiedCreateSiteSchema) {}
-export class SiteListItemDto extends createZodDto(SiteListItemSchema) {}
-export class StoredSiteDto extends createZodDto(UnifiedStoredSiteSchema) {}
+const UnifiedUpdateSiteSchema = z.object({
+  ruleEvalMode: z.enum(['PRIORITY', 'SPECIFICITY']).optional(),
+  dataSources: z.array(DataSourceDefinitionSchema).optional(),
+});
+
+export class CreateSiteDto extends createZodDto(UnifiedCreateSiteSchema) { }
+export class SiteListItemDto extends createZodDto(SiteListItemSchema) { }
+export class StoredSiteDto extends createZodDto(UnifiedStoredSiteSchema) { }
+export class UpdateSiteDto extends createZodDto(UnifiedUpdateSiteSchema) { }
