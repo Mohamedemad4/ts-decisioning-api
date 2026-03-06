@@ -64,7 +64,7 @@ export class SiteController {
 
     res.set({
       ETag: etag,
-      'Cache-Control': 'public, max-age=60, stale-while-revalidate=300',
+      'Cache-Control': 'public, max-age=60, stale-while-revalidate=300, stale-if-error=3600',
     });
 
     res.json({
